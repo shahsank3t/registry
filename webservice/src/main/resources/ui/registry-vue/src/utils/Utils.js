@@ -1,19 +1,5 @@
-/**
-  * Copyright 2017 Hortonworks.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License");
-  * you may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at
-  *   http://www.apache.org/licenses/LICENSE-2.0
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS,
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
-**/
 
 import _ from 'lodash';
-import React from 'react';
 import moment from 'moment';
 
 const isValidJson = function(obj) {
@@ -65,30 +51,8 @@ const ellipses = function(string, tagWidth) {
   if (!string || tagWidth === undefined) {
     return;
   }
-  console.log("ellipses");
-  console.log(string.length > (tagWidth/10) ? `${string.substr(0, tagWidth/10)}...` : string);
   return string.length > (tagWidth/10) ? `${string.substr(0, tagWidth/10)}...` : string;
 };
-
-export class StateMachine {
-  constructor(obj = {}){
-    this.states = obj.states;
-    this.transitions = obj.transitions;
-  }
-  setStates(obj = {}){
-    this.states = obj.states;
-    this.transitions = obj.transitions;
-  }
-  getStateById(id){
-    return _.find(this.states, {id: id});
-  }
-  getTransitionStateOptions(id){
-    var options = _.filter(this.transitions, (t) => {
-      return t.sourceStateId == id;
-    });
-    return options;
-  }
-}
 
 export default {
   isValidJson,

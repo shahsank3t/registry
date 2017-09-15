@@ -16,7 +16,7 @@
             <div v-html="props.item.text"></div>
         </div>
       </template>
-    </notifications>
+  </notifications>
   </div>
 </template>
 
@@ -27,9 +27,7 @@
     name: 'app',
     components : {
       "app-header" : Header
-    },
-
-    computed : {}
+    }
   };
 </script>
 <style scoped>

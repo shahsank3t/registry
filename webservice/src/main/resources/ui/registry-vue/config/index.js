@@ -14,7 +14,7 @@ proxyTable[host + ':' + port] = restTarget; // override target 'http://www.examp
 
 // configure proxy middleware options
 const options = {
-  target: restTarget, // target host
+  target: 'http://localhost:9090', // target host
   changeOrigin: true, // needed for virtual hosted sites
   ws: true, // proxy websockets
   router: proxyTable,
@@ -39,7 +39,7 @@ module.exports = {
     index: path.resolve(__dirname, '../public/index.html'),
     assetsRoot: path.resolve(__dirname, '../public'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '',
     productionSourceMap: true,
     // Gzip off by default as many popular static hosts such as
     // Surge or Netlify already gzip all static assets for you.
@@ -58,8 +58,8 @@ module.exports = {
     port: 9999,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
-    proxyTable: {},
+    assetsPublicPath: '',
+    proxyTable: options,
     // CSS Sourcemaps off by default because relative paths are "buggy"
     // with this option, according to the CSS-Loader README
     // (https://github.com/webpack/css-loader#sourcemaps)

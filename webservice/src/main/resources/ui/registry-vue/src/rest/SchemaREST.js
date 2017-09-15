@@ -1,6 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import {baseUrl} from '../utils/Constants';
-import {CustomFetch} from '../utils/Overrides';
+import {baseUrl} from '@/utils/Constants';
 
 const SchemaREST = {
   postSchema(options) {

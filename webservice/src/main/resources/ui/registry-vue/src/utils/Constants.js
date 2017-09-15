@@ -1,6 +1,6 @@
 const routePaths = {
   SCHEMA_REGISTRY: {name: 'SchemaRegistry', path: '/'},
-  TOPOLOGY_LISTING: {name: 'TopologyListing', path: '/topology'}
+  SERIALIAZER_DESERIALIAZER: {name: 'serdes', path: '/schemas/:schemaName/serdes'}
 };
 const baseUrl = '/api/v1/';
 
