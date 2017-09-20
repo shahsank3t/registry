@@ -1,6 +1,6 @@
 <template>
-  <div className="col-sm-12 text-center" :style="divStyle">
-    <p className="noDataFound-text">No Data Found</p>
+  <div class="col-sm-12 text-center" :style="divStyle">
+    <p class="noDataFound-text">No Data Found</p>
   </div>
 </template>
 <script>

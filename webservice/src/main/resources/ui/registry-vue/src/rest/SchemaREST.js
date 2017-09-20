@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import {baseUrl} from '@/utils/Constants';
+import {baseUrl} from '../utils/Constants';
 
 const SchemaREST = {
   postSchema(options) {
@@ -122,6 +122,28 @@ const SchemaREST = {
     name = encodeURIComponent(name);
     return fetch(baseUrl+'schemaregistry/schemas/'+name+'/compatibility', options)
       .then( (response) => {
+        return response.json();
+      });
+  },
+  getSchemaVersionStateMachine(options) {
+    options = options || {};
+    options.method = options.method || 'GET';
+    options.credentials = 'same-origin';
+    return fetch(baseUrl + 'schemaregistry/schemas/versions/statemachine', options)
+      .then((response) => {
+        return response.json();
+      });
+  },
+  changeStateOfVersion(verId, stateId, options){
+    options = options || {};
+    options.method = options.method || 'POST';
+    options.headers = options.headers || {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    };
+    options.credentials = 'same-origin';
+    return fetch(baseUrl + 'schemaregistry/schemas/versions/'+verId+'/state/'+stateId, options)
+      .then((response) => {
         return response.json();
       });
   }

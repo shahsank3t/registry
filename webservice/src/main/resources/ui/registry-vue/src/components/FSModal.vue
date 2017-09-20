@@ -1,6 +1,6 @@
 <template>
   <transition name="modal">
-    <div class="modal-mask" v-if="showModal">
+    <div class="modal-mask" v-show="showModal">
       <div class="modal-wrapper">
         <div class="modal-container" :class="computedClass">
           <!-- Modal Header -->
@@ -99,8 +99,8 @@
   font-family: inherit;
 }
 
-.modal-container.xl{width :900px}
-.modal-container.lg{width : 800px}
+.modal-container.xl{width :1000px}
+.modal-container.lg{width : 900px}
 .modal-container.sm{width : 600px}
 .modal-container.xm{width : 500px}
 

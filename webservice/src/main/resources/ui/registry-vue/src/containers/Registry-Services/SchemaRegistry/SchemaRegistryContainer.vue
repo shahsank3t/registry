@@ -5,7 +5,7 @@
         <i class="fa fa-plus"></i>
       </button>
     </div>
-    <div class="wrapper animated fadeIn">
+    <div v-if="!loading && dataFound" class="wrapper animated fadeIn">
       <div class="page-title-box row no-margin">
         <div class="col-md-3 col-md-offset-6 text-right">
           <div class="form-group">
@@ -21,58 +21,63 @@
           <app-Dropdown :menuList="dropDownList" @onSortByClicked="onSortByClicked"  funcName="onSortByClicked"></app-Dropdown>
         </div>
       </div>
-    </div>
 
-    <div class="row" v-if="!loading && schemaEntities.length">
-      <div class="col-md-12">
-        <div role="tablist" class="panel-registry">
-          <app-Panel v-for="(pageData , i) in activePageData"
-            :key="i"
-            :funcCallback="handleSelect"
-            :itemData="pageData">
-            <!-- Panel header -->
-            <div class="panel-title" slot="pHeader">
-              <span class="hb schema-status-icon" :class="getBtnClass(pageData.compatibility)">
-                <i :class="getIconClass(pageData.compatibility)"></i>
-              </span>
-              <div class="panel-sections first fluid-width-15">
-                  <h4 ref="schemaName" class="schema-name" :title="pageData.schemaName">
-                    {{filterEllipses(pageData.schemaName)}}
-                  </h4>
-                  <p class="schema-status" :class="pageData.compatibility.toLowerCase()">{{pageData.compatibility}}</p>
+      <div class="row" v-if="!loading && schemaEntities.length">
+        <div class="col-md-12">
+          <div role="tablist" class="panel-registry">
+            <app-Panel v-for="(pageData , i) in activePageData"
+              :key="i"
+              :funcCallback="handleSelect"
+              :itemData="pageData">
+              <!-- Panel header -->
+              <div class="panel-title" slot="pHeader">
+                <span class="hb schema-status-icon" :class="getBtnClass(pageData.compatibility)">
+                  <i :class="getIconClass(pageData.compatibility)"></i>
+                </span>
+                <div class="panel-sections first fluid-width-15">
+                    <h4 ref="schemaName" class="schema-name" :title="pageData.schemaName">
+                      {{filterEllipses(pageData.schemaName)}}
+                    </h4>
+                    <p class="schema-status" :class="pageData.compatibility.toLowerCase()">{{pageData.compatibility}}</p>
+                </div>
+                <div class="panel-sections">
+                    <h6 class="schema-th">Type</h6>
+                    <h4 :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">{{pageData.type}}</h4>
+                </div>
+                <div class="panel-sections">
+                    <h6 class="schema-th">Group</h6>
+                    <h4 ref="schemaGroup" :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']" :title="pageData.schemaGroup">
+                      {{filterEllipses(pageData.schemaGroup)}}
+                    </h4>
+                </div>
+                <div class="panel-sections">
+                    <h6 class="schema-th">Version</h6>
+                    <h4  :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">{{pageData.versionsArr.length}}</h4>
+                </div>
+                <div class="panel-sections">
+                    <h6 class="schema-th">Serializer & Deserializer</h6>
+                    <h4 :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">
+                      <router-link :to="{name: 'serdes', params: {schemaName: pageData.schemaName}}" :style="{display : 'inline'}">{{pageData.serDesInfos.length}}</router-link>
+                    </h4>
+                </div>
               </div>
-              <div class="panel-sections">
-                  <h6 class="schema-th">Type</h6>
-                  <h4 :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">{{pageData.type}}</h4>
+              <!-- Panel Body -->
+              <div class="panel-body" slot="pBody" v-if="!pageData.collapsed">
+                <app-PanelContent
+                  :panelData="pageData"
+                  :handleAddVersion="handleAddVersion"
+                  :handleExpandView="handleExpandView"
+                  :handleCompareVersions="handleCompareVersions"
+                  :StateMachine="StateMachine">
+                </app-PanelContent>
               </div>
-              <div class="panel-sections">
-                  <h6 class="schema-th">Group</h6>
-                  <h4 ref="schemaGroup" :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']" :title="pageData.schemaGroup">
-                    {{filterEllipses(pageData.schemaGroup)}}
-                  </h4>
-              </div>
-              <div class="panel-sections">
-                  <h6 class="schema-th">Version</h6>
-                  <h4  :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">{{pageData.versionsArr.length}}</h4>
-              </div>
-              <div class="panel-sections">
-                  <h6 class="schema-th">Serializer & Deserializer</h6>
-                  <h4 :class="['schema-td', !pageData.collapsed ? 'font-blue-color' : '']">
-                    <router-link :to="{name: 'serdes', params: {schemaName: pageData.schemaName}}" :style="{display : 'inline'}">{{pageData.serDesInfos.length}}</router-link>
-                  </h4>
-              </div>
-            </div>
-            <!-- Panel Body -->
-            <div class="panel-body" slot="pBody" v-if="!pageData.collapsed">
-              <app-PanelContent :panelData="pageData"
-                :handleAddVersion="handleAddVersion"
-                :handleExpandView="handleExpandView">
-              </app-PanelContent>
-            </div>
-          </app-Panel>
+            </app-Panel>
+          </div>
         </div>
       </div>
+      <app-NoData v-else></app-NoData>
     </div>
+    <app-NoData v-else></app-NoData>
 
     <!-- If loading is true  -->
     <div class="col-sm-12" v-if="loading">
@@ -84,26 +89,40 @@
     <!-- FSModal start here  -->
     <app-FSModal
       :modalTitle="modalTitle"
-      cssClass="sm"
+      cssClass="lg"
       ref="schemaModal"
-      @resovle="handleConfirmResolve()"
-      @reject="handleModalReject('schemaModal')"
+      @resovle="handleModalAction('schemaModal','SAVE')"
+      @reject="handleModalAction('schemaModal','CANCEL')"
       >
       <div slot="mbody">
-        This is an add schema modal
+        <app-SchemaFormContainer ref="addSchema"></app-SchemaFormContainer>
      </div>
     </app-FSModal>
+
+    <app-FSModal
+      :modalTitle="modalTitle"
+      cssClass="sm"
+      ref="versionModal"
+      @resovle="handleModalAction('versionModal','SAVE')"
+      @reject="handleModalAction('versionModal','CANCEL')"
+      >
+      <div slot="mbody">
+        This is an add versions modal
+     </div>
+    </app-FSModal>
+
   </div>
 </template>
 <script>
   import SchemaREST from '@/rest/SchemaREST';
   import FSModal from '@/components/FSModal';
   import FSToaster from '@/components/FSToaster';
-  import Utils from '@/utils/Utils';
+  import Utils, {StateMachine} from '@/utils/Utils';
   import NoData from '@/components/NoData';
   import DropDownVue from '@/utils/DropDown-Vue';
-  import PanelVue from '@/utils/Panel-Vue';
+  import PanelVue from '@/components/PanelVue';
   import PanelContent  from '@/components/PanelContent';
+  import SchemaFormContainer from './SchemaFormContainer';
 
   export default{
     name : "SchemaRegistryContainer",
@@ -113,7 +132,8 @@
       "app-NoData" : NoData,
       "app-Dropdown" : DropDownVue,
       "app-Panel" : PanelVue,
-      "app-PanelContent" : PanelContent
+      "app-PanelContent" : PanelContent,
+      "app-SchemaFormContainer": SchemaFormContainer
     },
 
     data(){
@@ -140,16 +160,19 @@
         schemaEntities : [],
         activePageData : [],
         schemaNameTagWidth : 413,
-        versionDataArr : []
+        versionDataArr : [],
+        StateMachine : new StateMachine()
       };
-    },
-
-    created(){
-      this.fetchData();
     },
 
     mounted(){
       this.btnClassChange();
+      this.fetchData().then((entities) => {
+        if(!entities.length){
+          this.dataFound = false;
+        }
+      });
+      this.fetchStateMachine();
     },
 
     beforeUpdate(){
@@ -189,11 +212,23 @@
         if(!this.loading){
           if(this.schemaData.length !== 0){
             if(this.$refs.schemaName && this.schemaNameTagWidth != this.$refs.schemaName.offsetWidth){
-              this.schemaNameTagWidth = this.$refs.schemaName[0].offsetWidth;
-              this.schemaGroupTagWidth= this.$refs.schemaGroup[0].offsetWidth;
+              this.schemaNameTagWidth = this.findMaxLength(this.$refs.schemaName);
+              this.schemaGroupTagWidth= this.findMaxLength(this.$refs.schemaGroup);
             }
           }
         }
+      },
+
+      findMaxLength(arr){
+        let val=[];
+        _.map(arr,(a) => { val.push(a.offsetWidth);});
+        return _.max(val) !== undefined ? _.max(val) : [];
+      },
+
+      fetchStateMachine(){
+        return SchemaREST.getSchemaVersionStateMachine().then((res) => {
+          this.StateMachine.setStates(res);
+        });
       },
 
       fetchData(){
@@ -204,7 +239,7 @@
         const {filterValue} = this;
         const {key} = this.sorted;
         const sortBy = (key === 'name') ? key+',a' : key+',d';
-
+        this.schemaEntities=[];
         return SchemaREST.searchAggregatedSchemas(sortBy, filterValue).then((schema) => {
           if (schema.responseMessage !== undefined) {
             FSToaster.error(schema.responseMessage);
@@ -217,19 +252,14 @@
               let currentVersion = 0;
               if(obj.versions.length){
                 obj.versions.forEach((v) => {
-                  versionsArr.push({
-                    versionId: v.version,
-                    description: v.description,
-                    schemaText: v.schemaText,
-                    schemaName: name,
-                    timestamp: v.timestamp
-                  });
+                  const vData = Object.assign({},v,{schemaName: name});
+                  versionsArr.push(vData);
                 });
                 currentVersion = Utils.sortArray(obj.versions.slice(), 'timestamp', false)[0].version;
               }
 
-              this.schemaData.push({
-                id: (index + 1),
+              schemaData.push({
+                id: obj.id,
                 type: type,
                 compatibility: compatibility,
                 schemaName: name,
@@ -240,7 +270,7 @@
                 currentVersion: currentVersion,
                 serDesInfos: obj.serDesInfos
               });
-              this.schemaEntities = this.schemaData;
+              this.schemaEntities = schemaData;
             });
             let dataFound = this.dataFound;
             if(!dataFound && this.schemaEntities.length){
@@ -321,12 +351,12 @@
       },
 
       handleAddVersion(schemaObj) {
-        let obj = _.find(schemaObj.versionsArr, {versionId: schemaObj.currentVersion});
+        let obj = _.find(schemaObj.versionsArr, {version: schemaObj.currentVersion});
         this.schemaObj = {
           schemaName: schemaObj.schemaName,
           description: obj ? obj.description : '',
           schemaText: obj ? obj.schemaText : '',
-          versionId: obj ? obj.versionId : ''
+          versionId: obj ? obj.version : ''
         };
         this.modalTitle = 'Edit Version';
         this.$refs.versionModal.show();
@@ -400,8 +430,19 @@
         this.showDiffModal = true;
       },
 
-      handleModalReject(refType){
-        this.$refs[refType].hide();
+      handleModalAction(modalType,action){
+        if(action === "SAVE"){
+          switch(modalType){
+          case "schemaModal" : this.handleSave() ;
+            break;
+          case "versionModal" : '' ;
+            break;
+          default:;
+            break;
+          }
+        } else {
+          this.$refs[modalType].hide();
+        }
       },
 
       filterEllipses(value){
@@ -411,8 +452,8 @@
     },
 
     watch : {
-      schemaEntities(){
-        this.activePageData = this.getActivePageData(this.schemaEntities,this.activePage,this.pageSize);
+      schemaEntities(entities){
+        this.activePageData = this.getActivePageData(entities,this.activePage,this.pageSize);
       }
     }
 
