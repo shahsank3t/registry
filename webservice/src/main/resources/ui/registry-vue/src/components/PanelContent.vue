@@ -94,7 +94,8 @@
           foldGutter: true,
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
           lint: false,
-          readOnly: true
+          readOnly: true,
+          line: true
         },
         schemaViewOptions : {
           lineNumbers: true,
@@ -103,7 +104,8 @@
           foldGutter: true,
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
           lint: false,
-          readOnly: true
+          readOnly: true,
+          line: true
         },
         emptySchema : ''
       };

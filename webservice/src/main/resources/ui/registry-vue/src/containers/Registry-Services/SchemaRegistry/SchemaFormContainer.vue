@@ -142,7 +142,8 @@
           styleActiveLine: true,
           foldGutter: true,
           gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-          lint: true
+          lint: true,
+          line: true
         },
         expandCodemirror : false
       };

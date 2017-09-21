@@ -96,7 +96,7 @@
       >
       <div slot="mbody">
         <app-SchemaFormContainer ref="addSchema"></app-SchemaFormContainer>
-     </div>
+      </div>
     </app-FSModal>
 
     <app-FSModal
@@ -107,8 +107,8 @@
       @reject="handleModalAction('versionModal','CANCEL')"
       >
       <div slot="mbody">
-        This is an add versions modal
-     </div>
+        <app-SchemaVersionForm ref="addVersion" :schemaObj="schemaObj"></app-SchemaVersionForm>
+      </div>
     </app-FSModal>
 
   </div>
@@ -123,6 +123,7 @@
   import PanelVue from '@/components/PanelVue';
   import PanelContent  from '@/components/PanelContent';
   import SchemaFormContainer from './SchemaFormContainer';
+  import SchemaVersionForm from './SchemaVersionForm';
 
   export default{
     name : "SchemaRegistryContainer",
@@ -133,7 +134,8 @@
       "app-Dropdown" : DropDownVue,
       "app-Panel" : PanelVue,
       "app-PanelContent" : PanelContent,
-      "app-SchemaFormContainer": SchemaFormContainer
+      "app-SchemaFormContainer": SchemaFormContainer,
+      "app-SchemaVersionForm" : SchemaVersionForm
     },
 
     data(){
@@ -159,7 +161,7 @@
         ],
         schemaEntities : [],
         activePageData : [],
-        schemaNameTagWidth : 413,
+        schemaNameTagWidth : 443,
         versionDataArr : [],
         StateMachine : new StateMachine()
       };
@@ -222,7 +224,7 @@
       findMaxLength(arr){
         let val=[];
         _.map(arr,(a) => { val.push(a.offsetWidth);});
-        return _.max(val) !== undefined ? _.max(val) : [];
+        return _.max(val) !== undefined && _.max(val) > this.schemaNameTagWidth ? _.max(val) : this.schemaNameTagWidth;
       },
 
       fetchStateMachine(){
@@ -341,7 +343,7 @@
       selectVersion(v) {
         let {schemaData} = this;
         let obj = _.find(schemaData, {schemaName: v.schemaName});
-        obj.currentVersion = v.versionId;
+        obj.currentVersion = v.version;
         this.schemaData = schemaData;
       },
 
@@ -356,14 +358,14 @@
           schemaName: schemaObj.schemaName,
           description: obj ? obj.description : '',
           schemaText: obj ? obj.schemaText : '',
-          versionId: obj ? obj.version : ''
+          version: obj ? obj.version : ''
         };
         this.modalTitle = 'Edit Version';
         this.$refs.versionModal.show();
       },
 
       handleExpandView(schemaObj) {
-        let obj = _.find(schemaObj.versionsArr, {versionId: schemaObj.currentVersion});
+        let obj = _.find(schemaObj.versionsArr, {version: schemaObj.currentVersion});
         this.schemaText = obj.schemaText;
         this.modalTitle = obj.schemaName;
         this.expandSchema = true;
@@ -384,7 +386,7 @@
                 if (this.modalTitle === 'Edit Version') {
                   msg = "Version updated successfully";
                 }
-                if(versions === this.schemaObj.versionId) {
+                if(versions === this.schemaObj.version) {
                   msg = "The schema version is already present";
                   FSToaster.info(msg);
                 } else {
@@ -435,7 +437,7 @@
           switch(modalType){
           case "schemaModal" : this.handleSave() ;
             break;
-          case "versionModal" : '' ;
+          case "versionModal" : this.handleSaveVersion() ;
             break;
           default:;
             break;
