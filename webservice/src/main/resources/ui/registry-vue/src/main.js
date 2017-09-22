@@ -8,6 +8,7 @@ import Notifications from 'vue-notification';
 import './assets/css/bootstrap.css';
 import './assets/css/font-awesome.min.css';
 import 'animate.css/animate.css';
+import './libs/jsdifflib/diffview.css';
 import './assets/css/style.css';
 
 Vue.config.productionTip = false;

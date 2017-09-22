@@ -111,6 +111,18 @@
       </div>
     </app-FSModal>
 
+    <app-FSModal
+      :modalTitle="modalTitle"
+      cssClass="lg"
+      ref="schemaDiffModal"
+      :hideOkBtn="true"
+      @reject="handleModalAction('schemaDiffModal','CANCEL')"
+      >
+      <div slot="mbody">
+        <app-SchemaVersionDiff ref="compareVersionRef" :schemaObj="schemaObj"></app-SchemaVersionDiff>
+      </div>
+    </app-FSModal>
+
   </div>
 </template>
 <script>
@@ -124,6 +136,7 @@
   import PanelContent  from '@/components/PanelContent';
   import SchemaFormContainer from './SchemaFormContainer';
   import SchemaVersionForm from './SchemaVersionForm';
+  import SchemaVersionDiff from './SchemaVersionDiff';
 
   export default{
     name : "SchemaRegistryContainer",
@@ -135,7 +148,8 @@
       "app-Panel" : PanelVue,
       "app-PanelContent" : PanelContent,
       "app-SchemaFormContainer": SchemaFormContainer,
-      "app-SchemaVersionForm" : SchemaVersionForm
+      "app-SchemaVersionForm" : SchemaVersionForm,
+      "app-SchemaVersionDiff": SchemaVersionDiff
     },
 
     data(){
@@ -429,7 +443,7 @@
       handleCompareVersions(schemaObj) {
         this.schemaObj = schemaObj;
         this.modalTitle = 'Compare Schema Versions';
-        this.showDiffModal = true;
+        this.$refs.schemaDiffModal.show();
       },
 
       handleModalAction(modalType,action){

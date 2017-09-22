@@ -1,8 +1,8 @@
 <template>
   <select class="form-control" required @click="selectChange">
     <template v-if="options.length !== 0">
-      <option  v-for="option in options" :value="option.value" :selected="selectedVal.value ? selectedVal.value === option.value : selectedVal === option.value" >
-        {{ option.text }}
+      <option  v-for="option in options" :value="valueKey ? option[valueKey] : option.value" :selected="valueKey ? (selectedVal[valueKey] ? selectedVal[valueKey] === option[valueKey] : selectedVal === option[valueKey]): (selectedVal.value ? selectedVal.value === option.value : selectedVal === option.value)" >
+        {{ textKey ? option[textKey] : option.text }}
       </option>
     </template>
 
@@ -28,7 +28,9 @@
         defaultValue : {}
       },
       loggerName : String,
-      callBack : String
+      callBack : String,
+      valueKey: String,
+      textKey: String
     },
     data(){
       return {};

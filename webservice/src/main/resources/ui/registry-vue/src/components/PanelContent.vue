@@ -37,7 +37,7 @@
             </p>
           </li>
         </ul>
-        <a v-if="sortedVersions.length > 1" class="compare-version" @click="handleCompareVersions">COMPARE VERSIONS</a>
+        <a v-if="sortedVersions.length > 1" class="compare-version" @click="handleCompareVersions(panelData)">COMPARE VERSIONS</a>
       </div>
     </template>
     <template v-else>
